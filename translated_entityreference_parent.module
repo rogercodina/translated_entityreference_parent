@@ -1,0 +1,111 @@
+<?php
+
+/**
+ * Translated Entity Reference Fix main file.
+ */
+
+/**
+ * Implements hook_node_presave().
+ *
+ * We make sure all "target_id" are in parents language.
+ */
+function translated_entityreference_parent_node_presave($node) {
+
+  // We get all ER fields in current drupal site.
+  $er_fields = array_keys(field_read_fields(array('type' => 'entityreference')));
+
+  // We search ER fields in this node.
+  $fields = field_info_instances("node", $node->type);
+
+  foreach ($fields as $name => $field_object) {
+
+    if (in_array($name, $er_fields)) {
+
+      $info = field_info_field($name);
+      $target_type = $info['settings']['target_type'];
+
+      // ER field found: we should check out values.
+      $options = $node->{$name}[LANGUAGE_NONE];
+
+      if ($target_type == 'node') {
+
+        foreach ($options as $key => $target_id) {
+
+          $referenced_node = node_load($target_id['target_id']);
+          $translations = translation_node_get_translations($referenced_node->tnid);
+
+          // We always assign the referenced node given parent's language.
+          if (!empty($translations) && !empty($translations[$node->language])) {
+            $node->{$name}[LANGUAGE_NONE][$key]['target_id'] = $translations[$node->language]->nid;
+          }
+        }
+      }
+      else if ($target_type == 'taxonomy_term') {
+
+        foreach ($options as $key => $target_id) {
+
+          $referenced_tax = taxonomy_term_load($target_id['target_id']);
+          $tax_translated = i18n_taxonomy_term_get_translation($referenced_tax, $node->language);
+
+          // We always assign the referenced node given parent's language.
+          if (!empty($tax_translated)) {
+            $node->{$name}[LANGUAGE_NONE][$key]['target_id'] = $tax_translated->tid;
+          }
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_taxonomy_term_presave().
+ *
+ * We make sure all "target_id" are in parents language.
+ */
+function translated_entityreference_parent_taxonomy_term_presave($term) {
+
+  // We get all ER fields in current drupal site.
+  $er_fields = array_keys(field_read_fields(array('type' => 'entityreference')));
+
+  // We search ER fields in this node.
+  $fields = field_info_instances("taxonomy_term", $term->vocabulary_machine_name);
+
+  foreach ($fields as $name => $field_object) {
+
+    if (in_array($name, $er_fields)) {
+
+      $info = field_info_field($name);
+      $target_type = $info['settings']['target_type'];
+
+      // ER field found: we should check out values.
+      $options = $term->{$name}[LANGUAGE_NONE];
+
+      if ($target_type == 'node') {
+
+        foreach ($options as $key => $target_id) {
+
+          $referenced_node = node_load($target_id['target_id']);
+          $translations = translation_node_get_translations($referenced_node->tnid);
+
+          // We always assign the referenced node given parent's language.
+          if (!empty($translations) && !empty($translations[$term->language])) {
+            $term->{$name}[LANGUAGE_NONE][$key]['target_id'] = $translations[$term->language]->nid;
+          }
+        }
+      }
+      else if ($target_type == 'taxonomy_term') {
+
+        foreach ($options as $key => $target_id) {
+
+          $referenced_tax = taxonomy_term_load($target_id['target_id']);
+          $tax_translated = i18n_taxonomy_term_get_translation($referenced_tax, $term->language);
+
+          // We always assign the referenced node given parent's language.
+          if (!empty($tax_translated)) {
+            $term->{$name}[LANGUAGE_NONE][$key]['target_id'] = $tax_translated->tid;
+          }
+        }
+      }
+    }
+  }
+}

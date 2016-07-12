@@ -1,0 +1,6 @@
+name = Translated Entity Reference (Parent's language fix)
+description = Enable this module if you want Entity Reference fields to save values on parent's language
+package = Fields
+core = "7.x"
+
+dependencies[] = translated_entityreference
