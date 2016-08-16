@@ -2,7 +2,7 @@ CONTENTS OF THIS FILE
 ---------------------
 
  * Introduction
- * Recommended modules
+ * Required modules
  * Installation
  * Configuration
  * More information
@@ -25,8 +25,8 @@ multilingual content types (Content Translation + i18n).
 
  * This module works only with ER fields that point to nodes and taxonomies.
 
-RECOMMENDED MODULES
--------------------
+REQUIRED MODULES
+----------------
 
  * Translated Entity Reference (https://www.drupal.org/project/translated_entityreference):
    It filters "Entity Reference" fields options given parent's or interface
@@ -37,6 +37,9 @@ RECOMMENDED MODULES
    doesn't automatically change the ER field options to match parent's
    language. And this is the reason why I programmed "Translated Entity
    Reference Save" module.
+
+   NOTE: Use latest dev version of module with patch on following issue applied:
+   https://www.drupal.org/node/2764093
 
 INSTALLATION
 ------------
